@@ -14,6 +14,11 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+pod 'Firebase/Core'       # If you use Analytics
+pod 'Firebase/Auth'       # If using Firebase Authentication
+pod 'Firebase/Firestore'  # If using Firestore
+pod 'Firebase/Messaging'  # If using FCM (notifications)
+
 target 'EzoTask' do
   config = use_native_modules!
 
@@ -33,3 +38,5 @@ target 'EzoTask' do
     )
   end
 end
+
+use_modular_headers!
