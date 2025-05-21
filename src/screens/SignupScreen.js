@@ -5,32 +5,28 @@ import {
 } from 'react-native';
 import { auth } from '../config/firebase';
 
-const LoginScreen = ({ navigation }) => {
+const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLoginPress = async () => {
+  const handleSignupPress = async () => {
     try {
-      const userCredential = await auth().signInWithEmailAndPassword(email, password);
-      console.log('Login successful', userCredential.user.email);
+      const userCredential = await auth().createUserWithEmailAndPassword(email, password);
+      console.log('Signup successful', userCredential.user.email);
       navigation.navigate('UserList');
     } catch (error) {
-      console.log('Login Error:', error.code, error.message);
+      console.error('Signup error', error);
 
       let message = 'Something went wrong. Please try again.';
-      if (error.code === 'auth/user-not-found') {
-        message = 'No user found with this email.';
+      if (error.code === 'auth/email-already-in-use') {
+        message = 'This email is already in use.';
       } else if (error.code === 'auth/invalid-email') {
         message = 'The email address is not valid.';
-      } else if (error.code === 'auth/wrong-password') {
-        message = 'The password is incorrect.';
-      } else if (error.code === 'auth/invalid-credential') {
-        message = 'Invalid login credentials. Please try again.';  
-      } else if (error.code === 'auth/too-many-requests') {
-        message = 'Too many login attempts. Please try again later.';  
+      } else if (error.code === 'auth/weak-password') {
+        message = 'Password should be at least 6 characters.';
       }
 
-      Alert.alert('Login Failed', message);
+      Alert.alert('Signup Failed', message);
     }
   };
 
@@ -38,7 +34,7 @@ const LoginScreen = ({ navigation }) => {
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={{ flex: 1, justifyContent: 'center' }}>
-          <Text style={styles.title}>Ezo Login</Text>
+          <Text style={styles.title}>Ezo Sign Up</Text>
 
           <TextInput
             style={styles.input}
@@ -57,12 +53,12 @@ const LoginScreen = ({ navigation }) => {
             onChangeText={setPassword}
           />
 
-          <TouchableOpacity style={styles.button} onPress={handleLoginPress}>
-            <Text style={styles.buttonText}>Login</Text>
+          <TouchableOpacity style={styles.button} onPress={handleSignupPress}>
+            <Text style={styles.buttonText}>Sign Up</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
-            <Text style={styles.linkText}>Don't have an account? Sign up</Text>
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text style={styles.linkText}>Already have an account? Login</Text>
           </TouchableOpacity>
         </View>
       </TouchableWithoutFeedback>
@@ -82,4 +78,4 @@ const styles = StyleSheet.create({
   linkText: { textAlign: 'center', color: '#383184', fontSize: 16 }
 });
 
-export default LoginScreen;
+export default SignupScreen;
